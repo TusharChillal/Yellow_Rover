@@ -95,5 +95,39 @@ This approach avoids Python overhead and improves real-time behavior.
 
 ---
 
-## 📁 Repository Structure
+## Repository Structure
+Yellow_Rover/
+├── camera_controll/ # Camera integration and utilities
+├── cpp_motor/ # C++ motor control node
+├── rover_description/ # URDF, meshes, and robot description
+├── rf2o_laser_odometry/ # RF2O odometry (git submodule)
+├── witmotion_IMU_ros/ # IMU driver (git submodule)
+├── nav2_param.yaml # Nav2 parameters
+├── mapper_param.yaml # slam_toolbox parameters
+
+
+---
+
+## Third-Party Packages
+
+This repository uses the following open-source ROS 2 packages as **Git submodules**:
+
+### rf2o_laser_odometry
+- Author: MAPIR Lab
+- Repository: https://github.com/MAPIRlab/rf2o_laser_odometry
+- License: BSD
+
+### witmotion_IMU_ros
+- Author: Elettra Scientific Computing 
+- Repository: https://github.com/ElettraSciComp/witmotion_IMU_ros
+- License: MIT
+
+All credit for these packages belongs to the original authors.
+
+---
+
+## Clone Instructions
+
+```bash
+git clone --recurse-submodules https://github.com/TusharChillal/Yellow_Rover.git
 
