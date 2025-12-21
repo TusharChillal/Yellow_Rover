@@ -1,27 +1,31 @@
-# Yellow Rover – Autonomous 4-Wheel Differential Drive Rover (ROS 2)
+# Yellow Bot – Autonomous 4-Wheel Differential Drive Rover 
 
-Yellow Rover is a research-oriented autonomous ground robot developed by converting a
+**Yellow Rover** is a research-oriented autonomous ground robot developed by converting a
 4-wheel differential drive rover into a fully autonomous platform using **ROS 2 Jazzy**,
-**Nav2**, and **slam_toolbox**.
+**slam_toolbox**, and **Nav2**.
 
-The primary goal of this project is to build a **robust, modular, and extensible mobile robot**
-that can be used for:
-- Autonomous navigation research
-- Localization and mapping experiments
-- Complex task execution
-- Future **multi-robot / swarm robotics** research
+The project is designed as a **modular, extensible robotics research platform**, with a
+long-term goal of enabling **complex autonomous tasks** and **future multi-robot (swarm)
+experiments**.
+
+---
+
+## Autonomous Navigation Demo
+
+**Video: Autonomous Navigation using Nav2**
+
+> *(Add your video link here — YouTube / Drive / GitHub video)*
+
+The demo shows real-world autonomous navigation including localization,and goal-directed motion.
 
 ---
 
 ## System Overview
 
-The robot performs autonomous navigation using:
+The robot achieves autonomy through:
 - 2D LiDAR-based SLAM
-- Lidar odometry fused with IMU data using an EKF
-- Nav2 for planning, control, and recovery behaviors
-
-The system is designed to be **hardware-agnostic**, **network-capable**, and **scalable** for
-multi-robot setups.
+- LiDAR odometry fused with IMU data using an EKF
+- Map-based localization and navigation using Nav2
 
 ---
 
@@ -31,11 +35,11 @@ multi-robot setups.
 |--------|------------|
 | SBC | Raspberry Pi 5 (16GB RAM) |
 | Motors | Waveshare DDSM115 Smart Motors |
-| Motor Driver | Waveshare DDSM Driver HAT (UART → ESP32) |
+| Motor Driver | Waveshare DDSM Driver HAT (ESP32-based) |
 | LiDAR | YDLiDAR G4 (2D) |
 | IMU | Hiwonder 10-Axis IMU |
-| Camera | OBSBOT Meet SE (Full HD USB Camera) |
-| Chassis | Custom CNC-machined Aluminium Shell |
+| Camera | OBSBOT Meet SE (USB Full HD) |
+| Chassis | Custom Aluminium Rover Shell |
 
 ---
 
@@ -49,80 +53,70 @@ multi-robot setups.
 | Navigation | Nav2 |
 | Odometry | RF2O LiDAR Odometry |
 | Sensor Fusion | robot_localization (EKF) |
-| Motor Control | Custom C++ UART driver |
-| MCU | ESP32 (on DDSM Driver HAT) |
+| Motor Control | Custom C++ ROS 2 node |
+| Teleoperation | PS5 joystick (C++) |
 
 ---
 
-## Localization & Odometry
+## Localization & Navigation
 
-- **Primary Odometry**: RF2O LiDAR odometry
-- **Orientation Source**: IMU (yaw stabilization)
-- **Fusion Method**: Extended Kalman Filter (EKF)
+- **Primary odometry** is obtained from RF2O LiDAR odometry
+- **IMU yaw-rate** is fused using an EKF to improve rotational stability
+- **slam_toolbox** is used for mapping
+- **AMCL** is used for localization on known maps
+- **Nav2** handles global planning, local control, and recovery behaviors
 
-This combination provides:
-- Smooth odometry
-- Reduced wheel slip effects
-- Stable localization for Nav2
-
----
-
-## Navigation Stack
-
-- **slam_toolbox**  
-  Used for real-time mapping and map serialization.
-
-- **AMCL**  
-  Used for probabilistic localization on known maps.
-
-- **Nav2**  
-  Used for:
-  - Global planning
-  - Local control
-  - Obstacle avoidance
-  - Recovery behaviors
+Wheel odometry is intentionally avoided due to slip in 4WD platforms.
 
 ---
 
-## Motor Control Architecture
+## Motor Control (`cpp_motor`)
 
-- Custom **C++ ROS 2 node** handles velocity commands
-- UART communication to ESP32 on the DDSM Driver HAT
-- High-frequency, low-latency control loop
-- Designed for deterministic motor response
+- Implemented as a **ROS 2 C++ node**
+- Subscribes to `/cmd_vel`
+- Computes individual wheel velocities for a 4-wheel differential drive
+- Sends commands via **UART** to an ESP32 on the DDSM Driver HAT
+- Motors and driver provide **built-in closed-loop control**
 
-This approach avoids Python overhead and improves real-time behavior.
+This design keeps ROS-side control lightweight, deterministic, and fully compatible with Nav2.
+
+---
+
+## Teleoperation
+
+- Dedicated **C++ PS5 joystick node**
+- Runs on a desktop/laptop
+- Publishes velocity commands to `/cmd_vel`
+- Commands transmitted over Wi-Fi to the rover
+
+Manual and autonomous control share the same interface, allowing seamless switching.
 
 ---
 
-## Repository Structure
-Yellow_Rover/
-├── camera_controll/ # Camera integration and utilities
-├── cpp_motor/ # C++ motor control node
-├── rover_description/ # URDF, meshes, and robot description
-├── rf2o_laser_odometry/ # RF2O odometry (git submodule)
-├── witmotion_IMU_ros/ # IMU driver (git submodule)
-├── nav2_param.yaml # Nav2 parameters
-├── mapper_param.yaml # slam_toolbox parameters
+## Vision & Perception (`camera_controll`)
 
+- Python-based camera publisher with compressed image streaming
+- Lightweight YOLOv11 object detection node
+- Detection results published as ROS topics
+- Intended for perception experiments and future semantic navigation work
 
 ---
+
 
 ## Third-Party Packages
 
-This repository uses the following open-source ROS 2 packages as **Git submodules**:
+This repository includes the following open-source ROS 2 packages :
 
-### rf2o_laser_odometry
-- Author: MAPIR Lab
-- Repository: https://github.com/MAPIRlab/rf2o_laser_odometry
-- License: BSD
+- **rf2o_laser_odometry**  
+  Author: MAPIR Lab  
+  Repository: https://github.com/MAPIRlab/rf2o_laser_odometry  
 
-### witmotion_IMU_ros
-- Author: Elettra Scientific Computing 
-- Repository: https://github.com/ElettraSciComp/witmotion_IMU_ros
-- License: MIT
+- **witmotion_IMU_ros**  This now reads like something from:
+  Author: Elettra SciComp  
+  Repository: https://github.com/ElettraSciComp/witmotion_IMU_ros  
 
-All credit for these packages belongs to the original authors.
+
+All credit belongs to the original authors.
 
 ---
 
@@ -130,4 +124,5 @@ All credit for these packages belongs to the original authors.
 
 ```bash
 git clone --recurse-submodules https://github.com/TusharChillal/Yellow_Rover.git
+
 
