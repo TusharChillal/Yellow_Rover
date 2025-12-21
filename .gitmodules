@@ -1,0 +1,6 @@
+[submodule "rf2o_laser_odometry"]
+	path = rf2o_laser_odometry
+	url = https://github.com/MAPIRlab/rf2o_laser_odometry
+[submodule "witmotion_IMU_ros"]
+	path = witmotion_IMU_ros
+	url = https://github.com/ElettraSciComp/witmotion_IMU_ros
