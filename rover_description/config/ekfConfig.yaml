@@ -6,34 +6,25 @@ ekf_filter_node:
     publish_tf: true
     map_frame: map
     odom_frame: odom
-    base_link_frame: base_footprint # Verify this matches your URDF!
+    base_link_frame: base_footprint 
     world_frame: odom
 
-    # ------------------------------------------------
-    # SOURCE 1: RF2O (Primary Source)
-    # ------------------------------------------------
-    # Now configured to handle Turning AND Moving
     odom0: /odom_rf2o
     odom0_config: [false, false, false,
-                   false, false, true,   # ENABLED: Yaw (Orientation)
-                   true,  true,  false,  # Vx, Vy
-                   false, false, true,   # ENABLED: Yaw Rate (Angular Vel)
+                   false, false, true,   
+                   true,  true,  false,  
+                   false, false, true,   
                    false, false, false]
     odom0_queue_size: 10
     odom0_nodelay: false
     odom0_differential: false
     odom0_relative: false
 
-    # ------------------------------------------------
-    # SOURCE 2: IMU (The "Corrector")
-    # ------------------------------------------------
-    # We only trust the IMU's "Speed of Turn" (Yaw Rate).
-    # We IGNORE absolute Yaw (index 5) so it doesn't fight with rf2o's angle.
     imu0: /imu
     imu0_config: [false, false, false,
-                  false, false, false,  # DISABLED: Orientation (Let rf2o handle angle)
+                  false, false, false,  
                   false, false, false,
-                  false, false, true,   # ENABLED: Yaw Rate (Corrects the turn speed)
+                  false, false, true,   
                   false, false, false]
     imu0_differential: false
     imu0_relative: true
