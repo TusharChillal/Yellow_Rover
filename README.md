@@ -14,9 +14,12 @@ multi-robot (swarm) systems research**.
 
 **Video: Autonomous Navigation using Nav2**
 
-> *(Add your video link here — YouTube / Drive / GitHub video)*
 
-The demo shows real-world autonomous navigation including localization, obstacle avoidance,
+https://github.com/user-attachments/assets/0676fb69-c946-42e4-8c23-776284eaca9e
+
+
+
+The demo shows real-world autonomous navigation including localization,
 and goal-directed motion.
 
 ---
