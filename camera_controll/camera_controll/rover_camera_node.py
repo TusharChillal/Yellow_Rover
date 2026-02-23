@@ -1,7 +1,6 @@
 import rclpy
 from rclpy.node import Node
 from sensor_msgs.msg import CompressedImage # Change import
-from cv_bridge import CvBridge
 import cv2
 from rclpy.qos import QoSProfile, ReliabilityPolicy, HistoryPolicy
 
@@ -26,7 +25,6 @@ class RoverCameraNode(Node):
         self.cap.set(cv2.CAP_PROP_FPS, 20)
         self.cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*'MJPG'))
 
-        self.bridge = CvBridge()
         self.timer = self.create_timer(1.0 / 20.0, self.timer_callback)
 
     def timer_callback(self):
