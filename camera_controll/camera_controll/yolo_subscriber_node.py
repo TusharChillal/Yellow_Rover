@@ -5,7 +5,6 @@ from sensor_msgs.msg import Image
 from cv_bridge import CvBridge
 import torch
 import cv2
-import numpy as np
 
 class YoloSubscriberNode(Node):
     def __init__(self):
