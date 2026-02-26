@@ -9,6 +9,18 @@ class RoverCameraNode(Node):
     def __init__(self):
         super().__init__('rover1_camera_node')
 
+        # Declare parameters with default values
+        self.declare_parameter('device_path', '/dev/video0')
+        self.declare_parameter('width', 480)
+        self.declare_parameter('height', 360)
+        self.declare_parameter('fps', 20.0)
+
+        # Get parameter values
+        device_path = self.get_parameter('device_path').get_parameter_value().string_value
+        width = self.get_parameter('width').get_parameter_value().integer_value
+        height = self.get_parameter('height').get_parameter_value().integer_value
+        fps = self.get_parameter('fps').get_parameter_value().double_value
+
         # QoS: Best Effort is better for lossy WiFi video
         qos_profile = QoSProfile(
             reliability=ReliabilityPolicy.BEST_EFFORT,
@@ -20,18 +32,27 @@ class RoverCameraNode(Node):
         # Note the topic name change and message type change
         self.publisher_ = self.create_publisher(CompressedImage, '/rover/camera/image_raw/compressed', qos_profile)
 
-        self.cap = cv2.VideoCapture('/dev/video0')
-        self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 480)  
-        self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 360)  
-        self.cap.set(cv2.CAP_PROP_FPS, 20)
+        self.cap = cv2.VideoCapture(device_path)
+        self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, width)
+        self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
+        self.cap.set(cv2.CAP_PROP_FPS, fps)
         self.cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*'MJPG'))
 
+        # Log configuration on startup
+        if self.cap.isOpened():
+            self.get_logger().info(
+                f'Camera initialized: {device_path} at {width}x{height} @ {fps}fps'
+            )
+        else:
+            self.get_logger().error(f'Failed to open camera device: {device_path}')
+
         self.bridge = CvBridge()
-        self.timer = self.create_timer(1.0 / 20.0, self.timer_callback)
+        self.timer = self.create_timer(1.0 / fps, self.timer_callback)
 
     def timer_callback(self):
         ret, frame = self.cap.read()
         if not ret:
+            self.get_logger().warn('Failed to read frame from camera', throttle_duration_sec=5.0)
             return
 
         # COMPRESS the image to JPEG before sending
