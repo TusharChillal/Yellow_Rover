@@ -16,18 +16,32 @@ class RoverCameraNode(Node):
             depth=1
         )
 
+        # Declare parameters
+        self.declare_parameter('device_path', '/dev/video0')
+        self.declare_parameter('width', 480)
+        self.declare_parameter('height', 360)
+        self.declare_parameter('fps', 20.0)
+
+        # Retrieve parameters
+        self.device_path = self.get_parameter('device_path').get_parameter_value().string_value
+        self.width = self.get_parameter('width').get_parameter_value().integer_value
+        self.height = self.get_parameter('height').get_parameter_value().integer_value
+        self.fps = self.get_parameter('fps').get_parameter_value().double_value
+
+        self.get_logger().info(f'Camera Node Started. Config: Path={self.device_path}, WxH={self.width}x{self.height}, FPS={self.fps}')
+
         # Publisher for COMPRESSED camera feed
         # Note the topic name change and message type change
         self.publisher_ = self.create_publisher(CompressedImage, '/rover/camera/image_raw/compressed', qos_profile)
 
-        self.cap = cv2.VideoCapture('/dev/video0')
-        self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 480)  
-        self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 360)  
-        self.cap.set(cv2.CAP_PROP_FPS, 20)
+        self.cap = cv2.VideoCapture(self.device_path)
+        self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, self.width)
+        self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, self.height)
+        self.cap.set(cv2.CAP_PROP_FPS, self.fps)
         self.cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*'MJPG'))
 
         self.bridge = CvBridge()
-        self.timer = self.create_timer(1.0 / 20.0, self.timer_callback)
+        self.timer = self.create_timer(1.0 / self.fps, self.timer_callback)
 
     def timer_callback(self):
         ret, frame = self.cap.read()
