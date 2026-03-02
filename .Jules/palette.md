@@ -1,0 +1,3 @@
+## 2024-05-15 - Improve CLI Developer UX with ROS Parameters and Logging
+**Learning:** Hardcoding values like device paths and camera resolutions inside ROS nodes without providing feedback makes debugging and configuration difficult for developers. The lack of visibility into what configuration the node is actually using leads to a frustrating developer experience.
+**Action:** Always replace hardcoded configuration values with ROS 2 parameters and add immediate CLI feedback (e.g., `self.get_logger().info()`) at startup to explicitly state the active configuration. This makes the system more flexible and dramatically improves developer UX by providing instant clarity.
