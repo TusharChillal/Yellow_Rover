@@ -1,0 +1,3 @@
+## 2024-04-03 - No Web Frontend in Robotics Repo
+**Learning:** This repository (Yellow Rover) is a pure backend ROS 2 (C++/Python) robotics project. It completely lacks a web frontend interface. Standard UX enhancements like ARIA labels, focus states, or DOM modifications do not apply here. Attempting to force UI/UX changes on backend nodes or ROS parameters violates the core constraint that backend logic must not be altered for UX purposes.
+**Action:** When assigned UX enhancement tasks in this specific repository, immediately abort the process without creating a PR. Do not attempt to modify ROS configurations or node logic under the guise of UX.
